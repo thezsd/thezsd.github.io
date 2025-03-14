@@ -361,7 +361,7 @@
         </div>
 
         <!-- 查询表单 -->
-        <form class="form-container" action="#" method="post" id="searchForm">
+        <form class="form-container" id="searchForm">
             <h2><i class="fas fa-search"></i> 基因查询</h2>
             
             <!-- 文件上传 -->
@@ -512,13 +512,14 @@
             e.preventDefault(); // 阻止表单默认提交行为
 
             // 检查是否选择了文件和填写了基因名称
-            //const fastaFile = document.getElementById('fasta_file').files[0];
+            const fastaFileInput = document.getElementById('fasta_file');
+            const fastaFile = fastaFileInput.files[0];
             const geneNames = document.getElementById('gene_names').value;
 
-            //if (!fastaFile) {
-                //alert('请上传FASTA文件');
-                //return;
-            //}
+            if (!fastaFile) {
+                alert('请上传FASTA文件');
+                return;
+            }
 
             if (!geneNames) {
                 alert('请输入查询基因名称');
@@ -535,7 +536,7 @@
                 width += 1 / totalMinutes * 100;
                 progressBar.style.width = width + '%';
                 const elapsedMinutes = Math.round((width / 100) * totalMinutes);
-                progressText.textContent = `${Math.round(width)}%`;
+                progressText.textContent = `${Math.round(width)}% 完成 (${elapsedMinutes}分/${totalMinutes}分)`;
 
                 if (width >= 100) {
                     clearInterval(interval);
