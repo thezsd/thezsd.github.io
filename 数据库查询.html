@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基因查询系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --dark-bg: #1a1a1a;
+            --light-text: #ecf0f1;
+            --card-bg: #2d2d2d;
+            --border-color: #4d4d4d;
+            --animation-duration: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, var(--dark-bg), #111);
+            color: var(--light-text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            animation: fadeIn var(--animation-duration) ease-in-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+            color: var(--light-text);
+            margin-bottom: 2rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            animation: slideUp var(--animation-duration) ease-in-out;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        .total-card {
+            grid-column: span 2;
+            border-left-color: var(--accent-color) !important;
+        }
+
+        .total-card .number {
+            color: var(--accent-color);
+        }
+
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn var(--animation-duration) ease-in-out;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--light-text);
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+        }
+
+        .custom-file-upload:hover {
+            border-color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .custom-file-upload i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .database-selector {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .database-option {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+
+        .database-option:hover, .database-option.active {
+            border-color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .database-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .database-option p {
+            margin: 0.5rem 0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .output-container {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn var(--animation-duration) ease-in-out;
+        }
+
+        .output-container h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .output-container h2 i {
+            margin-right: 0.5rem;
+        }
+
+        .output-image {
+            width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: #bbb;
+            margin-top: 0.5rem;
+        }
+
+        .example {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面头部 -->
+        <header class="header">
+            <h1><i class="fas fa-dna"></i> 基因查询系统</h1>
+            <h2>精准基因匹配与分析平台</h2>
+        </header>
+
+        <!-- 数据统计信息 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="number">132,501,487</div>
+                <div class="label">细菌来源的蛋白质序列</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">52,417,533</div>
+                <div class="label">真菌来源蛋白质序列</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">18,355</div>
+                <div class="label">细菌基因组样本</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">3,805</div>
+                <div class="label">真菌基因组样本</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">231</div>
+                <div class="label">累计查询次数</div>
+            </div>
+            <div class="stat-card total-card">
+                <div class="number">184,919,020</div>
+                <div class="label">总计蛋白质序列</div>
+            </div>
+        </div>
+
+        <!-- 查询表单 -->
+        <form class="form-container" action="#" method="post">
+            <h2><i class="fas fa-search"></i> 基因查询</h2>
+            
+            <!-- 文件上传 -->
+            <div class="form-group">
+                <label for="fasta_file">上传FASTA文件</label>
+                <div class="custom-file-upload">
+                    <i class="fas fa-file-upload"></i>
+                    <span>点击或拖放文件到这里上传</span>
+                    <input type="file" id="fasta_file" name="fasta_file" accept=".fasta,.fa" required>
+                </div>
+                <div class="instruction">
+                    请上传包含待查询基因序列的FASTA格式文件
+                </div>
+            </div>
+
+            <!-- 基因名称输入 -->
+            <div class="form-group">
+                <label for="gene_names">查询基因名称</label>
+                <input type="text" id="gene_names" name="gene_names" class="form-control" required>
+                <div class="instruction">
+                    请输入需要查询的基因名称，用分号分隔<br>
+                    示例：fadB;ter;bktB;YdiI
+                </div>
+                <div class="example">
+                    fadB;ter;bktB;YdiI
+                </div>
+            </div>
+
+            <!-- 数据库选择 -->
+            <div class="form-group">
+                <label>选择数据库</label>
+                <div class="database-selector">
+                    <div class="database-option active" data-value="bacteria">
+                        <i class="fas fa-bacteria"></i>
+                        <h3>细菌数据库</h3>
+                        <p>132,501,487条蛋白质序列</p>
+                    </div>
+                    <div class="database-option" data-value="fungi">
+                        <i class="fas fa-mushroom"></i>
+                        <h3>真菌数据库</h3>
+                        <p>52,417,533条蛋白质序列</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-rocket"></i> 开始查询
+            </button>
+        </form>
+
+        <!-- 示例输出 -->
+        <div class="output-container">
+            <h2><i class="fas fa-chart-line"></i> 示例输出</h2>
+            <p>以下是查询结果的示例展示：</p>
+            <img src="CORASON结果图.gif" alt="查询结果示例" class="output-image">
+        </div>
+    </div>
+
+    <script>
+        // 数据库选择切换
+        document.querySelectorAll('.database-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.database-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // 添加active类到当前选项
+                this.classList.add('active');
+                
+                // 设置隐藏的select元素值
+                const hiddenSelect = document.getElementById('database');
+                if (hiddenSelect) {
+                    hiddenSelect.value = this.getAttribute('data-value');
+                }
+            });
+        });
+
+        // 模拟文件上传拖放
+        const fileUpload = document.querySelector('.custom-file-upload');
+        const fileInput = document.querySelector('#fasta_file');
+        
+        if (fileUpload && fileInput) {
+            fileUpload.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileUpload.innerHTML = `
+                        <i class="fas fa-check"></i>
+                        <span>${this.files[0].name}</span>
+                    `;
+                }
+            });
+            
+            // 拖放功能
+            fileUpload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileUpload.style.borderColor = 'var(--primary-color)';
+                fileUpload.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+            });
+            
+            fileUpload.addEventListener('dragleave', function() {
+                fileUpload.style.borderColor = 'var(--border-color)';
+                fileUpload.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+            });
+            
+            fileUpload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileUpload.innerHTML = `
+                        <i class="fas fa-check"></i>
+                        <span>${e.dataTransfer.files[0].name}</span>
+                    `;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
