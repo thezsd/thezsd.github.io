@@ -305,6 +305,7 @@
             float: right;
             font-size: 1.5rem;
             cursor: pointer;
+            display: none; /* 隐藏关闭按钮 */
         }
 
         @keyframes fadeIn {
@@ -361,7 +362,7 @@
         </div>
 
         <!-- 查询表单 -->
-        <form class="form-container" id="searchForm">
+        <form class="form-container" action="#" method="post" id="searchForm">
             <h2><i class="fas fa-search"></i> 基因查询</h2>
             
             <!-- 文件上传 -->
@@ -387,6 +388,15 @@
                 </div>
                 <div class="example">
                     fadB;ter;bktB;YdiI
+                </div>
+            </div>
+
+            <!-- 添加邮箱输入 -->
+            <div class="form-group">
+                <label for="email">接收结果的邮箱</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+                <div class="instruction">
+                    请输入您的电子邮箱，查询结果将发送至此邮箱
                 </div>
             </div>
 
@@ -502,9 +512,13 @@
         const closeModal = document.getElementById('closeModal');
         const searchForm = document.getElementById('searchForm');
 
-        // 当点击关闭按钮时，关闭模态框
+        let canClose = false; // 控制模态框是否可以关闭的变量
+
+        // 当点击关闭按钮时，检查是否可以关闭模态框
         closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
+            if (canClose) {
+                modal.style.display = 'none';
+            }
         });
 
         // 当点击表单的提交按钮时，显示模态框并开始进度条动画
@@ -512,17 +526,22 @@
             e.preventDefault(); // 阻止表单默认提交行为
 
             // 检查是否选择了文件和填写了基因名称
-            const fastaFileInput = document.getElementById('fasta_file');
-            const fastaFile = fastaFileInput.files[0];
+            //const fastaFile = document.getElementById('fasta_file').files[0];
             const geneNames = document.getElementById('gene_names').value;
+            const email = document.getElementById('email').value;
 
-            if (!fastaFile) {
-                alert('请上传FASTA文件');
-                return;
-            }
+            //if (!fastaFile) {
+                //alert('请上传FASTA文件');
+                //return;
+            //}
 
             if (!geneNames) {
                 alert('请输入查询基因名称');
+                return;
+            }
+
+            if (!email) {
+                alert('请输入您的电子邮箱');
                 return;
             }
 
@@ -536,14 +555,16 @@
                 width += 1 / totalMinutes * 100;
                 progressBar.style.width = width + '%';
                 const elapsedMinutes = Math.round((width / 100) * totalMinutes);
-                progressText.textContent = `${Math.round(width)}% 完成 (${elapsedMinutes}分/${totalMinutes}分)`;
+                progressText.textContent = `${Math.round(width)}%`;
 
                 if (width >= 100) {
                     clearInterval(interval);
+                    // 允许关闭模态框
+                    canClose = true;
                     // 这里可以添加查询完成后的逻辑，例如关闭模态框或显示结果
                     setTimeout(function() {
                         modal.style.display = 'none';
-                        alert('查询已完成！');
+                        alert('上传已完成！请注意查收您的邮箱获取结果。');
                     }, 2000);
                 }
             }, 1000); // 每秒更新一次进度条
