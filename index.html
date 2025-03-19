@@ -285,19 +285,23 @@
             margin-top: 0;
         }
 
-        .progress-container {
-            margin: 1rem 0;
-            background-color: var(--border-color);
+        .redirect-btn {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
             border-radius: 5px;
-            height: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
         }
 
-        .progress-bar {
-            height: 100%;
-            background-color: var(--primary-color);
-            border-radius: 5px;
-            width: 0%;
-            transition: width 0.1s;
+        .redirect-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .close {
@@ -305,7 +309,6 @@
             float: right;
             font-size: 1.5rem;
             cursor: pointer;
-            display: none; /* 隐藏关闭按钮 */
         }
 
         @keyframes fadeIn {
@@ -432,14 +435,11 @@
     </div>
 
     <!-- 模态框 -->
-    <div class="modal" id="progressModal">
+    <div class="modal" id="redirectModal">
         <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <h2>正在进行查询，请等待</h2>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <p id="progressText">0% 完成 (0分/240分)</p>
+            <h2>欢迎访问基因查询系统</h2>
+            <p>我们已推出全新页面，为您带来更好的体验！</p>
+            <button class="redirect-btn" id="redirectToNewPage">立即前往</button>
         </div>
     </div>
 
@@ -505,69 +505,16 @@
             });
         }
 
-        // 模态框控制
-        const modal = document.getElementById('progressModal');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        const closeModal = document.getElementById('closeModal');
-        const searchForm = document.getElementById('searchForm');
-
-        let canClose = false; // 控制模态框是否可以关闭的变量
-
-        // 当点击关闭按钮时，检查是否可以关闭模态框
-        closeModal.addEventListener('click', function() {
-            if (canClose) {
-                modal.style.display = 'none';
-            }
+        // 页面加载时显示模态框
+        window.addEventListener('load', function() {
+            const modal = document.getElementById('redirectModal');
+            modal.style.display = 'flex';
         });
 
-        // 当点击表单的提交按钮时，显示模态框并开始进度条动画
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // 阻止表单默认提交行为
-
-            // 检查是否选择了文件和填写了基因名称
-            //const fastaFile = document.getElementById('fasta_file').files[0];
-            const geneNames = document.getElementById('gene_names').value;
-            const email = document.getElementById('email').value;
-
-            //if (!fastaFile) {
-                //alert('请上传FASTA文件');
-                //return;
-            //}
-
-            if (!geneNames) {
-                alert('请输入查询基因名称');
-                return;
-            }
-
-            if (!email) {
-                alert('请输入您的电子邮箱');
-                return;
-            }
-
-            // 显示模态框
-            modal.style.display = 'flex';
-
-            // 设置进度条动画
-            let width = 0;
-            const totalMinutes = 240;
-            const interval = setInterval(function() {
-                width += 1 / totalMinutes * 100;
-                progressBar.style.width = width + '%';
-                const elapsedMinutes = Math.round((width / 100) * totalMinutes);
-                progressText.textContent = `${Math.round(width)}%`;
-
-                if (width >= 100) {
-                    clearInterval(interval);
-                    // 允许关闭模态框
-                    canClose = true;
-                    // 这里可以添加查询完成后的逻辑，例如关闭模态框或显示结果
-                    setTimeout(function() {
-                        modal.style.display = 'none';
-                        alert('上传已完成！请注意查收您的邮箱获取结果。');
-                    }, 2000);
-                }
-            }, 1000); // 每秒更新一次进度条
+        // 跳转按钮点击事件
+        const redirectToNewPage = document.getElementById('redirectToNewPage');
+        redirectToNewPage.addEventListener('click', function() {
+            window.location.href = 'https://static-mp-0bca8f48-59d8-42c9-8e81-85ff0bbea4e0.next.bspapp.com/'; // 替换为实际页面地址
         });
     </script>
 </body>
